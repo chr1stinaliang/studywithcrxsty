@@ -103,6 +103,33 @@ input {
   night gems: <span id="gemCount">0</span> <span class="gem-icon">✦</span>
 </div>
 
+  .buttons button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Courier Prime", monospace;
+  font-weight: 700;
+  background: #d9c9a9;
+  color: #33427a;
+  text-transform: lowercase;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  
+  /* gives it a slight “lift” */
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* hover (slight lift) */
+.buttons button:hover {
+  transform: translateY(-2px);
+}
+
+/* 👇 THIS is the press effect */
+.buttons button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
 
 button {
   flex: 1;
@@ -241,6 +268,46 @@ function trackFocusTime(isWork) {
 function startTimer() {
   if (running) return;
   running = true;
+
+  function startTimer() {
+  if (running) return;
+  running = true;
+
+  status.textContent = isWork ? "focus" : "break";
+
+  timer = setInterval(() => {
+    if (timeLeft > 0) {
+
+      // 💎 GEM LOGIC (focus only)
+      if (isWork) {
+        gemTimer++;
+
+        // every 10 minutes = 600 seconds
+        if (gemTimer >= 600) {
+          gems++;
+          gemTimer = 0;
+          gemDisplay.textContent = gems;
+          localStorage.setItem("gems", gems);
+        }
+      }
+
+      timeLeft--;
+      updateDisplay();
+
+      // 🌙 night mode tracking (if you use it)
+      trackFocusTime(isWork);
+
+    } else {
+
+      isWork = !isWork;
+
+      let next = isWork ? workInput.value : breakInput.value;
+      setTime(next);
+
+      status.textContent = isWork ? "focus" : "break";
+    }
+  }, 1000);
+}
 
   status.textContent = isWork ? "focus" : "break";
 
