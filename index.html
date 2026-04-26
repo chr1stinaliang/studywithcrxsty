@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>pomodoro timer</title>
 
-<link href="https://fonts.googleapis.com/css2?family=courier+prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 html, body {
   height: 100%;
   margin: 0;
-  font-family: "courier prime", monospace;
+  font-family: "Courier Prime", monospace;
   background: #33427a;
 }
 
@@ -22,8 +22,8 @@ body {
 }
 
 .card {
-  width: 340px;
-  padding: 32px;
+  width: 360px;
+  padding: 28px;
   border-radius: 18px;
   text-align: center;
 }
@@ -33,22 +33,41 @@ h1 {
   font-size: 18px;
   margin-bottom: 10px;
   letter-spacing: 2px;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 .status {
   color: #6580a3;
   font-size: 13px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   opacity: 0.8;
+  text-transform: lowercase;
 }
 
 .timer {
-  font-size: 64px;
+  font-size: 60px;
   font-weight: 700;
   color: #6580a3;
-  margin: 20px 0;
-  letter-spacing: 3px;
+  margin: 15px 0;
+}
+
+.settings {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+input {
+  width: 70px;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  text-align: center;
+  font-family: "Courier Prime", monospace;
+  background: #d9c9a9;
+  color: #33427a;
+  font-weight: 700;
 }
 
 .buttons {
@@ -64,20 +83,17 @@ button {
   border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
-  font-family: "courier prime", monospace;
+  font-family: "Courier Prime", monospace;
   font-weight: 700;
   background: #d9c9a9;
   color: #33427a;
+  text-transform: lowercase;
   transition: 0.2s ease;
 }
 
 button:hover {
-  transform: translatey(-2px);
+  transform: translateY(-2px);
   opacity: 0.9;
-}
-
-button:active {
-  transform: scale(0.97);
 }
 </style>
 </head>
@@ -86,64 +102,84 @@ button:active {
 
 <div class="card">
   <h1>pomodoro</h1>
+
   <div class="status" id="status">ready</div>
   <div class="timer" id="display">25:00</div>
 
+  <div class="settings">
+    <input id="workInput" type="number" value="25"> 
+    <input id="breakInput" type="number" value="5">
+  </div>
+
   <div class="buttons">
-    <button onclick="starttimer()">start</button>
-    <button onclick="pausetimer()">pause</button>
-    <button onclick="resettimer()">reset</button>
+    <button onclick="startTimer()">start</button>
+    <button onclick="pauseTimer()">pause</button>
+    <button onclick="resetTimer()">reset</button>
   </div>
 </div>
 
 <script>
-let timeleft = 25 * 60;
+let timeLeft;
 let timer = null;
 let running = false;
+let isWork = true;
 
-const display = document.getelementbyid("display");
-const status = document.getelementbyid("status");
+const display = document.getElementById("display");
+const status = document.getElementById("status");
+const workInput = document.getElementById("workInput");
+const breakInput = document.getElementById("breakInput");
 
-function updatedisplay() {
-  let m = math.floor(timeleft / 60);
-  let s = timeleft % 60;
-  display.textcontent =
-    `${string(m).padstart(2,"0")}:${string(s).padstart(2,"0")}`;
+function setTime(minutes) {
+  timeLeft = minutes * 60;
 }
 
-function starttimer() {
+function updateDisplay() {
+  let m = Math.floor(timeLeft / 60);
+  let s = timeLeft % 60;
+
+  display.textContent =
+    String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+}
+
+function startTimer() {
   if (running) return;
   running = true;
-  status.textcontent = "focus";
 
-  timer = setinterval(() => {
-    if (timeleft > 0) {
-      timeleft--;
-      updatedisplay();
+  if (!timeLeft) {
+    setTime(parseInt(workInput.value));
+  }
+
+  status.textContent = isWork ? "focus" : "break";
+
+  timer = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      updateDisplay();
     } else {
-      clearinterval(timer);
-      running = false;
-      status.textcontent = "done";
-      alert("time's up!");
+      isWork = !isWork;
+      setTime(isWork ? workInput.value : breakInput.value);
+      status.textContent = isWork ? "focus" : "break";
     }
   }, 1000);
 }
 
-function pausetimer() {
-  clearinterval(timer);
+function pauseTimer() {
+  clearInterval(timer);
   running = false;
-  status.textcontent = "paused";
+  status.textContent = "paused";
 }
 
-function resettimer() {
-  clearinterval(timer);
+function resetTimer() {
+  clearInterval(timer);
   running = false;
-  timeleft = 25 * 60;
-  updatedisplay();
-  status.textcontent = "ready";
+  isWork = true;
+  setTime(workInput.value);
+  updateDisplay();
+  status.textContent = "ready";
 }
 
-updatedisplay();
+setTime(25);
+updateDisplay();
 </script>
 
 </body>
