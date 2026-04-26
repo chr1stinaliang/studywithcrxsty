@@ -63,7 +63,7 @@ h1 {
 .progress-bar {
   height: 100%;
   width: 100%;
-  background: #d9c9a9; 
+  background: #d9c9a9; /* 👈 changed to match buttons */
   transition: width 1s linear;
 }
 
@@ -99,37 +99,6 @@ input {
   display: flex;
   gap: 10px;
 }
-  <div class="gems">
-  night gems: <span id="gemCount">0</span> <span class="gem-icon">✦</span>
-</div>
-
-  .buttons button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: "Courier Prime", monospace;
-  font-weight: 700;
-  background: #d9c9a9;
-  color: #33427a;
-  text-transform: lowercase;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-  
-  /* gives it a slight “lift” */
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
-}
-
-/* hover (slight lift) */
-.buttons button:hover {
-  transform: translateY(-2px);
-}
-
-/* 👇 THIS is the press effect */
-.buttons button:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-}
 
 button {
   flex: 1;
@@ -148,37 +117,6 @@ button {
 button:hover {
   transform: translateY(-2px);
   opacity: 0.9;
-}
-  /* smooth transition */
-html, body {
-  transition: background 1.2s ease, color 1.2s ease;
-}
-
-/* night mode */
-body.night {
-  background: #000000;
-}
-
-/* only text turns white in night mode */
-body.night h1,
-body.night .status,
-body.night .timer,
-body.night .settings-labels,
-body.night .popup-box h2,
-body.night .popup-box p {
-  color: #ffffff;
-
-  .gems {
-  color: #d9c9a9;
-  margin-top: 10px;
-  font-size: 16px;
-  text-transform: lowercase;
-}
-
-.gem-icon {
-  color: #d9c9a9;
-  font-size: 18px;
-  margin-left: 5px;
 }
 </style>
 </head>
@@ -218,10 +156,7 @@ let totalTime = 25 * 60;
 let timer = null;
 let running = false;
 let isWork = true;
-let gems = 0;
-let gemTimer = 0;
 
-const gemDisplay = document.getElementById("gemCount");
 const display = document.getElementById("display");
 const status = document.getElementById("status");
 const workInput = document.getElementById("work");
@@ -244,88 +179,17 @@ function setTime(mins) {
   totalTime = mins * 60;
   updateDisplay();
 }
-<script>
-let focusSeconds = 0;
-let nightOn = false;
 
-function activateNightMode() {
-  if (nightOn) return;
-  document.body.classList.add("night");
-  nightOn = true;
-}
-
-function trackFocusTime(isWork) {
-  if (!isWork || nightOn) return;
-
-  focusSeconds++;
-
-  if (focusSeconds >= 3600) {
-    activateNightMode();
-  }
-}
-</script>
-  
 function startTimer() {
   if (running) return;
   running = true;
 
-  function startTimer() {
-  if (running) return;
-  running = true;
-
   status.textContent = isWork ? "focus" : "break";
 
   timer = setInterval(() => {
     if (timeLeft > 0) {
-
-      // 💎 GEM LOGIC (focus only)
-      if (isWork) {
-        gemTimer++;
-
-        // every 10 minutes = 600 seconds
-        if (gemTimer >= 600) {
-          gems++;
-          gemTimer = 0;
-          gemDisplay.textContent = gems;
-          localStorage.setItem("gems", gems);
-        }
-      }
-
       timeLeft--;
       updateDisplay();
-
-      // 🌙 night mode tracking (if you use it)
-      trackFocusTime(isWork);
-
-    } else {
-
-      isWork = !isWork;
-
-      let next = isWork ? workInput.value : breakInput.value;
-      setTime(next);
-
-      status.textContent = isWork ? "focus" : "break";
-    }
-  }, 1000);
-}
-
-  status.textContent = isWork ? "focus" : "break";
-
-  timer = setInterval(() => {
-    if (timeLeft > 0) {
-  if (isWork) {
-  gemTimer++;
-
-  // every 10 minutes = 600 seconds
-  if (gemTimer >= 600) {
-    gems++;
-    gemTimer = 0;
-    gemDisplay.textContent = gems;
-  }
-}
-      timeLeft--;
-      updateDisplay();
-      trackFocusTime(isWork);
     } else {
       isWork = !isWork;
       let next = isWork ? workInput.value : breakInput.value;
@@ -351,109 +215,6 @@ function resetTimer() {
 
 setTime(25);
 </script>
-<!-- help button -->
-<button id="helpButton">?</button>
 
-<!-- intro popup -->
-<div id="introPopup" class="popup">
-  <div class="popup-box">
-    <h2>introduction</h2>
-    <p>
-      ready to focus?
-
-      enter how long you want to focus in the first  box 
-      and how long you want your break to be in the second box.
-      press start to begin your session.
-      the progress bar will track your time as you work.
-      when your focus session ends, the timer will automatically switch to your break time.
-      use pause if you need to stop temporarily,and reset to start over.
-      after one hour of studying, it will temporarily become nighttime.
-      keep focusing to acquire night gems!
-    </p>
-
-    <button onclick="closePopup()">close</button>
-  </div>
-</div>
-
-<style>
-/* square ? button */
-#helpButton {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 45px;
-  height: 45px;
-  border: none;
-  border-radius: 0;
-  background: #d9c9a9;
-  color: #33427a;
-  font-family: "Courier Prime", monospace;
-  font-size: 22px;
-  font-weight: 700;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-/* popup background */
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.45);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-/* popup box */
-.popup-box {
-  width: 400px;
-  padding: 30px;
-  background: #33427a;
-  border: 2px solid #d9c9a9;
-  text-align: center;
-  border-radius: 12px;
-  font-family: "Courier Prime", monospace;
-}
-
-.popup-box h2 {
-  color: #6580a3;
-  margin-bottom: 15px;
-  text-transform: lowercase;
-}
-
-.popup-box p {
-  color: #6580a3;
-  line-height: 1.7;
-  margin-bottom: 20px;
-}
-
-.popup-box button {
-  background: #d9c9a9;
-  color: #33427a;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-family: "Courier Prime", monospace;
-  font-weight: 700;
-}
-</style>
-
-<script>
-const helpButton = document.getElementById("helpButton");
-const introPopup = document.getElementById("introPopup");
-
-helpButton.addEventListener("click", () => {
-  introPopup.style.display = "flex";
-});
-
-function closePopup() {
-  introPopup.style.display = "none";
-}
-  
-</script>
 </body>
 </html>
